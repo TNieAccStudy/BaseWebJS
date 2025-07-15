@@ -44,13 +44,16 @@ jobs:
         run: |
           DOCKER_COMPOSE_URL="https://raw.githubusercontent.com/${{ github.repository }}/main/docker-compose.yml"
           echo "DOCKER_COMPOSE_URL=$DOCKER_COMPOSE_URL" >> $GITHUB_ENV
+
       - name: SSH deploy to server
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.HOST_USERNAME }}
           key: ${{ secrets.SECRET_KEY }}
+          envs: DOCKER_COMPOSE_URL
           script: |
+            echo "DOCKER_COMPOSE_URL: ${DOCKER_COMPOSE_URL}"
 
             DOCKER_COMPOSE_PATH="/app/docker-compose.yaml"
 
@@ -60,13 +63,13 @@ jobs:
             echo "Logging in to Docker Hub"
             echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-            cd $(dirname DOCKER_COMPOSE_PATH)
+            cd $(dirname $DOCKER_COMPOSE_PATH)
 
             echo "Pulling latest app image"
-            docker-compose pull tnieyustudyacc176/base-web-js
+            docker-compose pull app
 
             echo "Restarting app service"
-            docker-compose up -d tnieyustudyacc176/base-web-js
+            docker-compose up -d app
 
             echo "Cleanup unused images"
             docker image prune -f
