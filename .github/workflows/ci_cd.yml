@@ -50,18 +50,16 @@ jobs:
             echo "Logging in to Docker Hub"
             echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-            echo "Pulling latest image"
-            docker pull tnieyustudyacc176/base-web-js:latest
 
-            echo "Stop existing container"
-            docker stop base-web-js
+            echo "Pulling latest app image"
+            docker-compose pull tnieyustudyacc176/base-web-js
 
-            echo "Remove existing container"
-            docker rm base-web-js || true
+            echo "Restarting app service"
+            docker-compose up -d tnieyustudyacc176/base-web-js
 
-            echo "Running new container"
-            docker run -dp 7200:3000 --name base-web-js tnieyustudyacc176/base-web-js:latest
+            echo "Cleanup unused images"
+            docker image prune -f
 
-            echo "Successfully deploy app to server"
+            echo "Deployment successful!"
 
             
