@@ -1,8 +1,10 @@
-name: Jekyll site CI
+name: CI_CD
 
 on:
   push:
     branches: [ "main" ]
+    tags: 
+      - 'v*'
   pull_request:
     branches: [ "main" ]
 
@@ -29,7 +31,8 @@ jobs:
       with:
         context: .
         push: true
-        tags: tnieyustudyacc176/base-web-js:latest
+        tags: |
+          tnieyustudyacc176/base-web-js:latest
 
   deploy:
     
@@ -50,22 +53,14 @@ jobs:
             echo "Pulling latest image"
             docker pull tnieyustudyacc176/base-web-js:latest
 
+            echo "Stop existing container"
+            docker stop base-web-js
+
+            echo "Remove existing container"
+            docker rm base-web-js || true
+
             echo "Running new container"
-            docker run -dp 7200:3000 --name base-web-js_new tnieyustudyacc176/base-web-js:latest
-
-            if [$? -eq 0]; then
-              echo "Stopping existing container."
-              docker stop base-web-js || true
-
-              echo "Remove old container"
-              docker rm base-web-js || true
-
-              echo "Rename new container"
-              docker rename base-web-js_new base-web-js
-            else
-              echo "Failed to start new container. Keeping the old container running."
-              docker rm base-web-js_new || true
-            fi
+            docker run -dp 7200:3000 --name base-web-js tnieyustudyacc176/base-web-js:latest
 
             echo "Successfully deploy app to server"
 
