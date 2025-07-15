@@ -53,6 +53,7 @@ jobs:
           key: ${{ secrets.SECRET_KEY }}
           envs: DOCKER_COMPOSE_URL
           script: |
+            sudo su
             echo "DOCKER_COMPOSE_URL: ${DOCKER_COMPOSE_URL}"
 
             DOCKER_COMPOSE_PATH="/app/docker-compose.yaml"
