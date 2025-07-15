@@ -26,15 +26,6 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Get git tag
-      id: vars
-      run: |
-        if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-        echo "VERSION_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-        else
-          echo "VERSION_TAG=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-        fi
-
     - name: Build and push
       uses: docker/build-push-action@v5
       with:
@@ -42,7 +33,6 @@ jobs:
         push: true
         tags: |
           tnieyustudyacc176/base-web-js:latest
-          tnieyustudyacc176/base-web-js:${{ env.VERSION_TAG }}
 
   deploy:
     
@@ -57,14 +47,11 @@ jobs:
           username: ${{ secrets.HOST_USERNAME }}
           key: ${{ secrets.SECRET_KEY }}
           script: |
-            VERSION_TAG=${{ needs.build.outputs.VERSION_TAG }}
-            echo "VERSION_TAG : ${VERSION_TAG}"
-
             echo "Logging in to Docker Hub"
             echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
             echo "Pulling latest image"
-            docker pull tnieyustudyacc176/base-web-js:$VERSION_TAG
+            docker pull tnieyustudyacc176/base-web-js:latest
 
             echo "Stop existing container"
             docker stop base-web-js
@@ -73,7 +60,7 @@ jobs:
             docker rm base-web-js || true
 
             echo "Running new container"
-            docker run -dp 7200:3000 --name base-web-js tnieyustudyacc176/base-web-js:$VERSION_TAG
+            docker run -dp 7200:3000 --name base-web-js tnieyustudyacc176/base-web-js:latest
 
             echo "Successfully deploy app to server"
 
