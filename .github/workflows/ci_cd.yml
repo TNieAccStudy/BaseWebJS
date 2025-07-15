@@ -30,3 +30,43 @@ jobs:
         context: .
         push: true
         tags: tnieyustudyacc176/base-web-js:latest
+
+  deploy:
+    
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: SSH deploy to server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.HOST_USERNAME }}
+          key: ${{ secrets.SECRET_KEY }}
+          script: |
+            echo "Logging in to Docker Hub"
+            echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+            echo "Pulling latest image"
+            docker pull tnieyustudyacc176/base-web-js:latest
+
+            echo "Running new container"
+            docker run -dp 7200:3000 --name base-web-js_new tnieyustudyacc176/base-web-js:latest
+
+            if [$? -eq 0]; then
+              echo "Stopping existing container."
+              docker stop base-web-js || true
+
+              echo "Remove old container"
+              docker rm base-web-js || true
+
+              echo "Rename new container"
+              docker rename base-web-js_new base-web-js
+            else
+              echo "Failed to start new container. Keeping the old container running."
+              docker rm base-web-js_new || true
+            fi
+
+            echo "Successfully deploy app to server"
+
+            
