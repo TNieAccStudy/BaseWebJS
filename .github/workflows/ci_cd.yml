@@ -29,4 +29,4 @@ jobs:
       with:
         context: .
         push: true
-        tags: tnieyustudyacc176/BaseWebJS:latest
+        tags: tnieyustudyacc176/base-web-js:latest
