@@ -42,7 +42,7 @@ jobs:
     steps:
       - name: Get raw URL of docker-compose.yml
         run: |
-          DOCKER_COMPOSE_URL="https://raw.githubusercontent.com/${{ github.repository }}/main/docker-compose.yml"
+          DOCKER_COMPOSE_URL="https://raw.githubusercontent.com/${{ github.repository }}/main/docker-compose.yaml"
           echo "DOCKER_COMPOSE_URL=$DOCKER_COMPOSE_URL" >> $GITHUB_ENV
 
       - name: SSH deploy to server
