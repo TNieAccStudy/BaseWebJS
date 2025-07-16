@@ -69,7 +69,7 @@ jobs:
             docker-compose pull app
 
             echo "Restarting app service"
-            docker-compose up -d --force-recreate app
+            docker-compose up -d app
 
             echo "Cleanup unused images"
             docker image prune -f
