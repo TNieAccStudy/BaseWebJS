@@ -10,6 +10,10 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, "templates", "index.html"));
 });
 
+app.get('/test', (req, res) => {
+    res.sendFile(path.join(__dirname, "templates", "new1.html"));
+});
+
 app.listen(port, ()=> {
     console.log(`Server running at http://localhost:${port}`);
 })
